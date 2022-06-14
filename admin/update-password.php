@@ -1,0 +1,119 @@
+<?php include 'partials/menu.php'; ?>
+
+
+    <div class="main-content">
+        <div class="wrapper">
+            <h1>Change Password</h1>
+            <br><br>
+            <?php
+            if (isset($_GET['id'])) {
+                $id = $_GET['id'];
+            }
+
+            ?>
+            <form action="" method="POST">
+                <table class="tbl-30">
+                    <tr>
+                        <td>Current password:</td>
+                        <td>
+                            <input type="password" name="current_password" placeholder="Current Password">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>New password:</td>
+                        <td>
+                            <input type="password" name="new_password" placeholder="New Password">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Confirm password:</td>
+                        <td>
+                            <input type="password" name="confirm_password" placeholder="Confirm Password">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <input type="hidden" name="id" value="<?= $id; ?>">
+                            <input type="submit" name="submit" value="Change Password" class="btn-secondary">
+                        </td>
+                    </tr>
+
+                </table>
+
+            </form>
+
+        </div>
+    </div>
+
+<?php
+// Check whether the Submit Button is Clicked or not
+if (isset($_POST['submit'])) {
+    // echo "Button Clicked";
+    // 1.Get the data from form
+    $id = $_POST['id'];
+    $current_password = md5($_POST['current_password']);
+    $new_password = md5($_POST['new_password']);
+    $confirm_password = md5($_POST['confirm_password']);
+
+    // 2.Check whether the user with current ID and Current Password Exists or Not
+    $sql = "SELECT * FROM `tbl_admin` WHERE `id`='$id' AND `password`='$current_password'";
+
+//Execute the Query
+    $res = mysqli_query($connect, $sql);
+
+    if ($res == TRUE) {
+        //Check whether data is available or not
+        $count = mysqli_num_rows($res);
+        if ($count == 1) {
+            // User exists and password can be changed
+            //echo "User Found";
+            //Check whether the new password and confirm password match or not
+            if($new_password==$confirm_password){
+                //Update the password
+                $sql2="UPDATE `tbl_admin` SET 
+                       `password`= '$new_password' 
+                        WHERE `id`='$id'
+                       ";
+
+                //Execute the Query
+                $res2= mysqli_query($connect,$sql2);
+
+                //Check Query Executed or Not
+                if($res2==TRUE){
+                    //Display Success Message
+                    $_SESSION['change-pwd']="<div class='success'>Password Change Successfully</div>";
+                    //Redirect the User
+                    header("location:" . SITEURL . 'admin/manage-admin.php');
+                }
+                else {
+                    //Display Error Message
+                    $_SESSION['change-pwd']="<div class='error'>Failed To Change Password</div>";
+                    //Redirect the User
+                    header("location:" . SITEURL . 'admin/manage-admin.php');
+                }
+            }
+            else{
+                //Redirect to Manage Admin with Error Message
+                $_SESSION['pwd-not-match']="<div class='error'>Password Did Not Match</div>";
+                //Redirect the User
+                header("location:" . SITEURL . 'admin/manage-admin.php');
+            }
+        } else {
+    // User Does Not Exist Set Message and Redirect
+            $_SESSION['user-not-found']="<div class='error'>User Not Found</div>";
+            //Redirect the User
+            header("location:" . SITEURL . 'admin/manage-admin.php');
+
+        }
+    }
+
+// 3. Check whether the New Password and Confirm Password  Match or Not
+
+    // 4. Change password   if all above is true
+}
+?>
+
+<?php include 'partials/footer.php'; ?>

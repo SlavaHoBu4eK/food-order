@@ -1,0 +1,6 @@
+create database food_order;
+use food_order;
+create table tbl_admin (id int(10) auto_increment,full_name varchar(100), username varchar(100), password varchar(255), primary key (id));
+create table tbl_category (id int(10) auto_increment, title varchar(100), image_name varchar(255), featured varchar(10), active varchar(10), primary key (id));
+create table tbl_food (id int(10) auto_increment, title varchar(150), description varchar(255), price decimal(10,1),image_name varchar(255), category_id int(10) , featured varchar(10), active varchar(10), primary key (id), FOREIGN KEY (category_id) REFERENCES tbl_category(id));
+create table  tbl_order (id int(10) auto_increment, food varchar(150), price varchar(255), qty decimal(10,1), total varchar(255), order_date datetime, status varchar(20), customer_name varchar(10), customer_contact varchar(20),customer_email varchar(150), customer_address varchar(255), primary key (id));
